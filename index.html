@@ -844,8 +844,9 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     </div>
   </div>
   <div class="content" style="padding-top:0;">
-    <!-- Calendar Strip -->
-    <div class="cal-strip">
+
+    <!-- ① Calendar strip -->
+    <div class="cal-strip" style="margin-bottom:24px;">
       <div class="cal-day"><div class="cal-day-name">Mon</div><div class="cal-date">26</div></div>
       <div class="cal-day"><div class="cal-day-name">Tue</div><div class="cal-date">27</div></div>
       <div class="cal-day"><div class="cal-day-name">Wed</div><div class="cal-date">28</div></div>
@@ -855,16 +856,23 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
       <div class="cal-day"><div class="cal-day-name">Sun</div><div class="cal-date">01</div></div>
     </div>
 
-    <!-- Meal Plan Section -->
-    <div class="section-header" style="margin-top:8px;">
+    <!-- ② Meal Plan header — 24px below calendar -->
+    <div class="section-header" style="margin-bottom:16px;">
       <span class="section-title">Meal Plan</span>
-      <span class="see-all" onclick="navTo('s-plan','plan')">See all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+      <span class="see-all" onclick="navTo('s-plan','plan',event)">See all
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </span>
     </div>
-    <p style="font-size:12px;color:var(--gray1);margin-bottom:8px;">Breakfast</p>
 
-    <div class="meal-card" onclick="goTo('s-meal-detail')">
+    <!-- Breakfast label 16px above meal card -->
+    <p style="font-size:12px;color:var(--gray1);margin:0 0 16px;">Breakfast</p>
+
+    <!-- ③ Meal card — 24px bottom margin to streak section -->
+    <div class="meal-card" style="margin-bottom:24px;" onclick="goTo('s-meal-detail')">
       <div class="meal-card-top">
-        <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=80&h=80&fit=crop&crop=center" class="meal-thumb" alt="Avocado Egg Toast" onerror="this.style.background='#2a3a2a';this.removeAttribute('src')">
+        <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=80&h=80&fit=crop&crop=center"
+             class="meal-thumb" alt="Avocado Egg Toast"
+             onerror="this.style.background='#2a3a2a';this.removeAttribute('src')">
         <div class="meal-info">
           <div class="meal-name">Avocado Egg Toast</div>
           <div class="meal-macros">420 kcal · 24g protein · 22g Fat · 12g Carbs</div>
@@ -873,60 +881,77 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
       </div>
       <div class="meal-actions">
         <button class="btn btn-secondary" style="flex:1;padding:10px 8px;font-size:12px;">View details</button>
-        <button class="btn btn-white" style="flex:1;padding:10px 8px;font-size:12px;">Edit plan</button>
+        <button class="btn btn-white"     style="flex:1;padding:10px 8px;font-size:12px;">Edit plan</button>
       </div>
     </div>
 
-    <!-- Streak -->
-    <div class="streak-row">
-      <div class="streak-badge">
+    <!-- ④ Streak + Calorie hero — single container, 24px bottom to summary -->
+    <div style="margin-bottom:24px;">
+      <!-- Streak tag -->
+      <div class="streak-badge" style="margin-bottom:12px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         <span>12 days streak</span>
       </div>
+      <!-- Calorie hero — 12px below streak tag -->
+      <div>
+        <div class="calorie-sub">You've gained</div>
+        <div class="calorie-main">360 Calories Today.</div>
+      </div>
     </div>
 
-    <!-- Calorie Hero -->
-    <div class="calorie-hero">
-      <div class="calorie-sub">You've gained</div>
-      <div class="calorie-main">360 Calories Today.</div>
+    <!-- ⑤ Today's Summary — 24px below streak/calorie block -->
+    <!-- Summary title -->
+    <div class="section-header" style="margin-bottom:24px;">
+      <span class="section-title">
+        Today's Summary
+        <span style="font-size:11px;color:var(--gray1);font-weight:400;">(kcal)</span>
+      </span>
     </div>
 
-    <!-- Today's Summary -->
-    <div class="section-header" style="margin-top:4px;">
-      <span class="section-title">Today's Summary <span style="font-size:11px;color:var(--gray1);font-weight:400;">(kcal)</span></span>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <!-- 360 gained row — 24px below title -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
       <span style="font-size:14px;color:var(--white);font-weight:600;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="vertical-align:middle;margin-right:3px"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"
+             style="vertical-align:middle;margin-right:3px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         <span style="color:var(--accent);">360</span> gained
       </span>
       <span style="font-size:12px;color:var(--gray1);">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2" style="vertical-align:middle;margin-right:3px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2"
+             style="vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
         600 target
       </span>
     </div>
-    <div class="progress-bar-track" style="margin-bottom:16px;">
-      <div class="progress-bar-fill" style="width:60%;background:var(--accent);"></div>
+
+    <!-- Progress + macro grid — 24px below 360 gained row -->
+    <div>
+      <div class="progress-bar-track" style="margin-bottom:16px;">
+        <div class="progress-bar-fill" style="width:60%;background:var(--accent);"></div>
+      </div>
+      <div class="nut-grid">
+        <div class="nut-card">
+          <div class="nut-label">Protein</div>
+          <div class="nut-val">120<span>/200</span></div>
+          <div class="progress-bar-track" style="margin-top:8px;">
+            <div class="progress-bar-fill" style="width:60%;background:var(--purple);"></div>
+          </div>
+        </div>
+        <div class="nut-card">
+          <div class="nut-label">Fats</div>
+          <div class="nut-val">120<span>/200</span></div>
+          <div class="progress-bar-track" style="margin-top:8px;">
+            <div class="progress-bar-fill" style="width:60%;background:var(--pink);"></div>
+          </div>
+        </div>
+        <div class="nut-card">
+          <div class="nut-label">Carbs</div>
+          <div class="nut-val">120<span>/200</span></div>
+          <div class="progress-bar-track" style="margin-top:8px;">
+            <div class="progress-bar-fill" style="width:60%;background:var(--teal-bar);"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="nut-grid">
-      <div class="nut-card">
-        <div class="nut-label">Protein</div>
-        <div class="nut-val">120<span>/200</span></div>
-        <div class="progress-bar-track" style="margin-top:8px;"><div class="progress-bar-fill" style="width:60%;background:var(--purple);"></div></div>
-      </div>
-      <div class="nut-card">
-        <div class="nut-label">Fats</div>
-        <div class="nut-val">120<span>/200</span></div>
-        <div class="progress-bar-track" style="margin-top:8px;"><div class="progress-bar-fill" style="width:60%;background:var(--pink);"></div></div>
-      </div>
-      <div class="nut-card">
-        <div class="nut-label">Carbs</div>
-        <div class="nut-val">120<span>/200</span></div>
-        <div class="progress-bar-track" style="margin-top:8px;"><div class="progress-bar-fill" style="width:60%;background:var(--teal-bar);"></div></div>
-      </div>
-    </div>
   </div>
 </div>
 
