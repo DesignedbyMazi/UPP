@@ -56,17 +56,76 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 #bnav{
   position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
   width:calc(100% - 32px);
-  background:rgba(22,22,22,0.82);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:32px;padding:12px 4px;
-  display:none;justify-content:space-around;align-items:center;z-index:200;
+  background:rgba(31,31,31,0.20);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:0.8px solid rgba(244,244,244,0.12);
+  border-radius:1000px;padding:4px;height:66px;
+  display:none;justify-content:space-around;align-items:stretch;z-index:200;
+  overflow:hidden;
 }
-.ni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 20px;border-radius:20px;cursor:pointer;user-select:none;}
-.ni svg{width:22px;height:22px;stroke:var(--gray1);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
-.ni .nlabel{font-size:10px;font-weight:500;color:var(--gray1);display:none;}
-.ni.active svg{stroke:var(--accent);}
-.ni.active .nlabel{display:block;color:var(--accent);}
+.ni{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;padding:11px 20px;border-radius:1000px;
+  cursor:pointer;user-select:none;flex:1;
+  position:relative;overflow:hidden;
+  border:0.4px solid transparent;
+}
+.ni svg{
+  width:16px;height:16px;stroke:#959595;fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;
+}
+.ni .nlabel{font-size:12px;font-weight:500;color:#959595;letter-spacing:0.24px;line-height:18px;}
+.ni.active{background:rgba(0,0,0,0.04);border-color:rgba(226,226,226,0.12);}
+.ni.active svg{stroke:#008774;}
+.ni.active .nlabel{color:#008774;font-weight:600;letter-spacing:0;}
+
+/* ── RIPPLE EFFECT ── */
+.ripple-drop{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(255,255,255,0.22) 0%,rgba(255,255,255,0.08) 40%,transparent 70%);
+  filter:blur(8px);transform:scale(0.1);opacity:1;
+}
+.ripple-drop.burst{animation:ripple-burst 0.58s cubic-bezier(0.22,1,0.36,1) forwards;}
+@keyframes ripple-burst{
+  0%  {transform:scale(0.15) scaleY(0.9);opacity:1;}
+  12% {transform:scale(0.85) scaleY(0.92);opacity:0.92;}
+  40% {transform:scale(1.7);opacity:0.72;filter:blur(7px);}
+  70% {transform:scale(2.5);opacity:0.32;filter:blur(11px);}
+  100%{transform:scale(3.2);opacity:0;filter:blur(15px);}
+}
+.ripple-ring{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:0;
+  border:1.5px solid rgba(255,255,255,0.13);
+}
+.ripple-ring.expand{animation:ripple-ring-expand 0.68s cubic-bezier(0.22,1,0.36,1) forwards;}
+.ripple-ring.expand-2{animation:ripple-ring-expand 0.68s cubic-bezier(0.22,1,0.36,1) 0.08s forwards;}
+@keyframes ripple-ring-expand{
+  0%  {transform:scale(0.2);opacity:0.8;filter:blur(2px);}
+  55% {opacity:0.28;filter:blur(6px);}
+  100%{transform:scale(4.2);opacity:0;filter:blur(13px);}
+}
+
+/* ── INGREDIENT PILL TABS ── */
+.ingr-tabs{
+  display:flex;background:#1f1f1f;border-radius:9999px;
+  padding:2px;margin:16px 20px 0;height:44px;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.ingr-tab-slider{
+  position:absolute;top:2px;bottom:2px;width:calc(50% - 2px);
+  background:#141414;border-radius:9999px;
+  box-shadow:0 0 2px 0 rgba(255,255,255,0.02);
+  transition:left 0.38s cubic-bezier(0.22,1,0.36,1);
+  left:2px;z-index:0;pointer-events:none;
+}
+.ingr-tab{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  border-radius:9999px;font-size:14px;font-weight:500;line-height:20px;
+  color:#5a5a5a;cursor:pointer;position:relative;z-index:1;
+  overflow:hidden;transition:color 0.3s cubic-bezier(0.22,1,0.36,1);
+  white-space:nowrap;
+}
+.ingr-tab.active{color:#ffffff;}
 
 /* ── SHARED COMPONENTS ── */
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;padding-bottom:96px;}
@@ -1021,54 +1080,50 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 <!-- ═══════════════════════════════════════════════
      SCREEN: INGREDIENTS
 ═══════════════════════════════════════════════ -->
-<div class="screen" id="s-ingredients">
+<div class="screen" id="s-ingredients" style="background:#141414;">
   <div class="sbar" style="padding-top:16px;"><span class="sbar-time">9:41</span></div>
   <div class="dynamic-island"></div>
-  <div class="page-header">
-    <div class="page-title">Ingredients</div>
-    <div style="width:36px;height:36px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-    </div>
+  <!-- Header -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 16px;">
+    <span style="font-size:20px;font-weight:500;color:#ffffff;letter-spacing:0.4px;line-height:28px;">Ingredients</span>
+    <img src="https://i.pravatar.cc/32?u=anita" style="width:32px;height:32px;border-radius:10000px;object-fit:cover;flex-shrink:0;" alt="Profile">
   </div>
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab(this,'ingr')">Available Ingredients</div>
-    <div class="tab" onclick="switchTab(this,'ingr')">Grocery List</div>
+  <!-- Pill Category Tabs -->
+  <div class="ingr-tabs" id="ingr-tab-bar">
+    <div class="ingr-tab-slider" id="ingr-slider"></div>
+    <div class="ingr-tab active" onclick="switchIngrTab(this,event,0)">Available Ingredients</div>
+    <div class="ingr-tab" onclick="switchIngrTab(this,event,1)">Grocery List</div>
   </div>
-  <div class="content" style="padding-top:16px;" id="ingr-content">
-    <div id="ingr-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0 40px;">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="var(--gray2)" stroke-width="1.5" style="margin-bottom:16px;">
-        <path d="M32 12c-8 0-16 5-16 16s8 12 8 12h16s8 0 8-12-8-16-16-16z"/>
-        <path d="M24 40v8M40 40v8M20 48h24"/>
-        <circle cx="32" cy="24" r="4"/>
+  <!-- Content -->
+  <div class="content" style="padding-top:24px;" id="ingr-content">
+    <!-- Empty State -->
+    <div id="ingr-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:96px 0;">
+      <!-- Basket icon -->
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin-bottom:10px;">
+        <rect x="10" y="26" width="44" height="30" rx="4" stroke="#3a3a3a" stroke-width="2"/>
+        <path d="M20 26L26 14M44 26L38 14" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="32" y1="34" x2="32" y2="48" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="24" y1="34" x2="24" y2="48" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="40" y1="34" x2="40" y2="48" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10 36h44" stroke="#3a3a3a" stroke-width="2"/>
       </svg>
-      <p style="font-size:13px;color:var(--gray1);text-align:center;margin-bottom:20px;">No ingredients yet. Start adding<br>what you have at home!</p>
-      <button class="btn btn-secondary btn-sm" style="gap:6px;" onclick="showAddIngredient()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Add Ingredient
+      <p style="font-size:14px;font-weight:400;color:#5a5a5a;text-align:center;line-height:20px;max-width:203px;margin-bottom:24px;">No ingredients yet. Add what you have at home to get started.</p>
+      <button onclick="showAddIngredient()" style="display:inline-flex;align-items:center;gap:8px;background:#1f1f1f;border:none;border-radius:100px;padding:10px 18px 10px 16px;cursor:pointer;height:40px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span style="font-size:14px;font-weight:500;color:#ffffff;line-height:20px;white-space:nowrap;">Add Ingredient</span>
       </button>
     </div>
+    <!-- Filled list -->
     <div id="ingr-list" style="display:none;">
-      <div style="background:var(--surface);border-radius:var(--r-lg);padding:0 16px;margin-bottom:16px;">
-        <div class="ingr-item">
-          <span class="ingr-name">Rice</span>
-          <svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </div>
-        <div class="ingr-item">
-          <span class="ingr-name">Beans</span>
-          <svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </div>
-        <div class="ingr-item">
-          <span class="ingr-name">Avocado Pear</span>
-          <svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </div>
-        <div class="ingr-item" style="border:none;">
-          <span class="ingr-name">Avocado Pear</span>
-          <svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </div>
+      <div style="background:#1f1f1f;border-radius:var(--r-lg);padding:0 16px;margin-bottom:16px;">
+        <div class="ingr-item"><span class="ingr-name">Rice</span><svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        <div class="ingr-item"><span class="ingr-name">Beans</span><svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        <div class="ingr-item"><span class="ingr-name">Avocado Pear</span><svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+        <div class="ingr-item" style="border:none;"><span class="ingr-name">Spinach</span><svg class="ingr-del" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
       </div>
-      <button class="btn btn-secondary btn-full" style="gap:6px;" onclick="showAddIngredient()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Add Ingredient
+      <button onclick="showAddIngredient()" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#1f1f1f;border:none;border-radius:100px;padding:10px 18px 10px 16px;cursor:pointer;height:40px;width:100%;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span style="font-size:14px;font-weight:500;color:#ffffff;line-height:20px;">Add Ingredient</span>
       </button>
     </div>
   </div>
@@ -1291,20 +1346,40 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      BOTTOM NAVIGATION
 ═══════════════════════════════════════════════ -->
 <nav id="bnav">
-  <div class="ni active" id="nav-home" onclick="navTo('s-home','home')">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  <div class="ni active" id="nav-home" onclick="navTo('s-home','home',event)">
+    <!-- Home icon -->
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/>
+      <path d="M9 21V12h6v9"/>
+    </svg>
     <span class="nlabel">Home</span>
   </div>
-  <div class="ni" id="nav-plan" onclick="navTo('s-plan','plan')">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  <div class="ni" id="nav-plan" onclick="navTo('s-plan','plan',event)">
+    <!-- Calendar/Plan icon -->
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+      <path d="M8 14h2M11 14h2M14 14h2M8 17h2M11 17h2"/>
+    </svg>
     <span class="nlabel">Plan</span>
   </div>
-  <div class="ni" id="nav-ingredients" onclick="navTo('s-ingredients','ingredients')">
-    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 0 20A10 10 0 0 1 12 2z"/><path d="M12 6v6l4 2"/></svg>
+  <div class="ni" id="nav-ingredients" onclick="navTo('s-ingredients','ingredients',event)">
+    <!-- Basket/Ingredient icon -->
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 2l-3 6h18l-3-6"/>
+      <rect x="3" y="8" width="18" height="12" rx="2"/>
+      <path d="M12 12v4M9 12v4M15 12v4"/>
+    </svg>
     <span class="nlabel">Ingredient</span>
   </div>
-  <div class="ni" id="nav-feed" onclick="navTo('s-feed','feed')">
-    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  <div class="ni" id="nav-feed" onclick="navTo('s-feed','feed',event)">
+    <!-- Community/Feed icon -->
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="7" r="3"/>
+      <path d="M3 20v-1a6 6 0 0 1 6-6h0"/>
+      <circle cx="17" cy="10" r="3"/>
+      <path d="M21 20v-1a6 6 0 0 0-6-6h0"/>
+    </svg>
     <span class="nlabel">Feed</span>
   </div>
 </nav>
@@ -1338,10 +1413,37 @@ function histBack() {
   }
 }
 
-function navTo(screenId, navKey) {
-  goTo(screenId);
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
-  document.getElementById('nav-' + navKey).classList.add('active');
+function navTo(screenId, navKey, e) {
+  const navEl = document.getElementById('nav-' + navKey);
+  if (e) spawnRipple(navEl, e);
+  // Slight delay so ripple plays before content switch
+  setTimeout(() => {
+    goTo(screenId);
+    document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+    navEl.classList.add('active');
+  }, 60);
+}
+
+/* ── LIQUID RIPPLE ENGINE ── */
+function spawnRipple(el, e) {
+  const rect = el.getBoundingClientRect();
+  const cx = (e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX) || rect.left + rect.width / 2) - rect.left;
+  const cy = (e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY) || rect.top + rect.height / 2) - rect.top;
+  const size = Math.max(rect.width, rect.height) * 1.4;
+
+  function makeEl(cls, w, h, l, t, delay) {
+    const s = document.createElement('span');
+    s.className = cls;
+    s.style.cssText = `width:${w}px;height:${h}px;left:${l}px;top:${t}px;${delay ? 'animation-delay:' + delay + 's;' : ''}`;
+    el.appendChild(s);
+    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add(cls === 'ripple-drop' ? 'burst' : (delay ? 'expand-2' : 'expand'))));
+    s.addEventListener('animationend', () => s.remove(), { once: true });
+    return s;
+  }
+
+  makeEl('ripple-drop', size, size, cx - size / 2, cy - size / 2, 0);
+  makeEl('ripple-ring',  size * 0.55, size * 0.55, cx - size * 0.275, cy - size * 0.275, 0);
+  makeEl('ripple-ring',  size * 0.42, size * 0.42, cx - size * 0.21,  cy - size * 0.21,  0.08);
 }
 
 // ── ONBOARDING SEARCH DATABASES ──
@@ -1452,57 +1554,341 @@ function updateSlider(el) {
   document.getElementById('cal-slider-val').textContent = el.value + ' kcal';
 }
 
-// ── AI ORB LOADER ──
-const loaderMessages = [
-  'Analysing your ingredients…',
-  'Checking nutritional goals…',
-  'Balancing macros & calories…',
-  'Matching your dietary style…',
-  'Optimising meal variety…',
-  'Building your weekly plan…',
-];
-const loaderFinalTitle = 'Your Plan is Ready!';
-let loaderTimer = null;
+// ── CINEMATIC AI FOOD LOADER ──
+let loaderRAF = null;
+
+function getDietContext() {
+  const diets   = Object.keys(window.ob_selections?.diet || {});
+  const nutLabel = document.getElementById('nut-goal-label')?.textContent || '';
+  let pill = 'Balanced nutrition plan active', dietType = 'balanced';
+  if      (diets.some(d => d.includes('Vegan')))                          { pill = 'Vegan plan detected';                   dietType = 'vegan';   }
+  else if (diets.some(d => d.includes('Vegetarian')))                     { pill = 'Plant-based profile loaded';            dietType = 'vegan';   }
+  else if (diets.some(d => d.includes('Keto')))                           { pill = 'Keto optimization active';              dietType = 'keto';    }
+  else if (diets.some(d => d.includes('Paleo') || d.includes('Carnivore'))){ pill = 'High protein plan detected';          dietType = 'protein'; }
+  else if (nutLabel.toLowerCase().includes('loss'))                        { pill = 'Weight loss optimization in progress'; dietType = 'lean';    }
+  else if (nutLabel.toLowerCase().includes('muscle') || nutLabel.toLowerCase().includes('gain')) { pill = 'High protein plan detected'; dietType = 'protein'; }
+  return { pill, dietType };
+}
 
 function startLoader() {
   goTo('s-loader');
-  const stepsEl = document.getElementById('loader-steps');
-  const titleEl = document.getElementById('loader-title');
-  const subEl   = document.getElementById('loader-sub');
-  stepsEl.innerHTML = '';
-  titleEl.textContent = 'Crafting Your Plan';
-  subEl.textContent   = 'Hold tight while we build something great for you…';
+  const { pill, dietType } = getDietContext();
 
-  let i = 0;
-  function addStep() {
-    if (i >= loaderMessages.length) {
-      // Done
-      titleEl.textContent = loaderFinalTitle;
-      subEl.textContent   = 'Your personalised meal plan is ready!';
-      // Mark last step done
-      stepsEl.querySelectorAll('.loader-step').forEach(s => {
-        s.classList.remove('active');
-        s.classList.add('done');
-        s.querySelector('.step-dot').style.background = 'var(--accent)';
-      });
-      setTimeout(() => goTo('s-success'), 1200);
-      return;
-    }
-    // Mark previous as done
-    if (i > 0) {
-      const prev = stepsEl.children[i - 1];
-      prev.classList.remove('active');
-      prev.classList.add('done');
-    }
-    const step = document.createElement('div');
-    step.className = 'loader-step active';
-    step.innerHTML = `<div class="step-dot"></div><span>${loaderMessages[i]}</span>`;
-    stepsEl.appendChild(step);
-    stepsEl.scrollTop = stepsEl.scrollHeight;
-    i++;
-    loaderTimer = setTimeout(addStep, 480);
+  const pillEl  = document.getElementById('ldr-pill');
+  const pillTxt = document.getElementById('ldr-pill-text');
+  pillTxt.textContent = pill;
+  pillEl.style.opacity = '0';
+  setTimeout(() => { pillEl.style.opacity = '1'; }, 900);
+
+  const DIET_COLORS = {
+    vegan:   ['#4CAF50','#8BC34A','#66BB6A','#26A69A','#00BFA5'],
+    keto:    ['#FFA620','#FF6B35','#FFD54F','#FFAB40','#E65100'],
+    protein: ['#EF5350','#FF7043','#FFA726','#FFCA28','#FF6B35'],
+    lean:    ['#00BCD4','#26C6DA','#4DD0E1','#00ACC1','#80DEEA'],
+    balanced:['#00C8AA','#9B59F5','#FF6B35','#FFA620','#5B4FE8'],
+  };
+  const colors = DIET_COLORS[dietType] || DIET_COLORS.balanced;
+
+  const bgC   = document.getElementById('ldr-bg');
+  const mainC = document.getElementById('ldr-main');
+  const W = bgC.offsetWidth || 393, H = bgC.offsetHeight || 852;
+  bgC.width = mainC.width = W;
+  bgC.height = mainC.height = H;
+  const bgCtx = bgC.getContext('2d'), ctx = mainC.getContext('2d');
+  const CX = W / 2, CY = H * 0.42;
+
+  const TEXT_PHASES = [
+    { title: 'Analyzing ingredients', sub: 'Scanning your pantry and preferences…'    },
+    { title: 'Balancing nutrition',   sub: 'Computing macros and micronutrients…'     },
+    { title: 'Generating meal',       sub: 'AI is crafting your personalized plan…'   },
+    { title: 'Plating your dish',     sub: 'Adding the finishing touches with care…'  },
+  ];
+  // First two phases are fast, last phase is deliberately slow ("thoughtful AI")
+  const PHASE_DUR = [1700, 1600, 2400, 3100];
+  let phase = 0, phaseStart = performance.now(), lastT = performance.now(), gT = 0;
+
+  function setTextPhase(p) {
+    const mt = document.getElementById('ldr-main-text');
+    const st = document.getElementById('ldr-sub-text');
+    mt.style.opacity = st.style.opacity = '0';
+    setTimeout(() => {
+      mt.textContent = TEXT_PHASES[p].title;
+      st.textContent = TEXT_PHASES[p].sub;
+      mt.style.opacity = st.style.opacity = '1';
+    }, 240);
+    [0,1,2,3].forEach(i => {
+      const el = document.getElementById('ldp' + i);
+      if (!el) return;
+      el.style.width      = i <= p ? '36px' : '8px';
+      el.style.background = i <= p ? 'var(--accent)' : '#252525';
+      el.style.opacity    = i < p  ? '0.4' : '1';
+    });
   }
-  loaderTimer = setTimeout(addStep, 600);
+  setTextPhase(0);
+
+  // Ingredient particles
+  const PCOUNT = 24;
+  const SHAPES = ['circle','leaf','grain','circle','drop','circle'];
+  const particles = Array.from({length: PCOUNT}, (_, i) => ({
+    angle:  (i / PCOUNT) * Math.PI * 2,
+    orbitR: 85 + (i % 4) * 18,
+    speed:  0.28 + (i % 5) * 0.06,
+    size:   2.5 + (i % 3) * 1.5,
+    color:  colors[i % colors.length],
+    shape:  SHAPES[i % SHAPES.length],
+  }));
+
+  // Data / AI nodes (blue-purple tones)
+  const dataNodes = Array.from({length: 7}, (_, i) => ({
+    angle: (i / 7) * Math.PI * 2,
+    r:     120 + (i % 3) * 16,
+    speed: 0.45 + i * 0.08,
+    size:  1.5 + (i % 3) * 0.8,
+    color: ['#9B59F5','#5B4FE8','#00C8AA','#00A693','#7C4DFF','#00BFA5','#64B5F6'][i],
+  }));
+
+  /* ── BG: holographic grid ── */
+  function drawBG(t) {
+    bgCtx.clearRect(0, 0, W, H);
+    const G = 30, alpha = 0.024 + Math.sin(t * 0.4) * 0.009;
+    bgCtx.strokeStyle = `rgba(0,166,147,${alpha})`;
+    bgCtx.lineWidth = 0.5;
+    for (let x = 0; x <= W; x += G) { bgCtx.beginPath(); bgCtx.moveTo(x,0); bgCtx.lineTo(x,H); bgCtx.stroke(); }
+    for (let y = 0; y <= H; y += G) { bgCtx.beginPath(); bgCtx.moveTo(0,y); bgCtx.lineTo(W,y); bgCtx.stroke(); }
+  }
+
+  /* ── Central AI orb ── */
+  function drawOrb(t, ph) {
+    const r = 58;
+    // Pulse rings
+    for (let i = 0; i < 3; i++) {
+      const rt = (t * 0.42 + i * 0.33) % 1;
+      const rr = r + 18 + rt * 65;
+      const ra = (1 - rt) * (ph < 2 ? 0.22 : 0.18);
+      ctx.beginPath(); ctx.arc(CX, CY, rr, 0, Math.PI*2);
+      ctx.strokeStyle = ph < 2 ? `rgba(0,200,170,${ra})` : `rgba(255,130,50,${ra})`;
+      ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    // Ambient glow aura
+    const ga = ctx.createRadialGradient(CX, CY, 0, CX, CY, r + 40);
+    ga.addColorStop(0, ph < 2 ? 'rgba(0,200,170,0.35)' : 'rgba(255,100,40,0.28)');
+    ga.addColorStop(0.6, ph < 2 ? 'rgba(91,79,232,0.1)' : 'rgba(255,100,40,0.05)');
+    ga.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = ga; ctx.beginPath(); ctx.arc(CX, CY, r+40, 0, Math.PI*2); ctx.fill();
+    // Spinning segmented ring
+    ctx.save(); ctx.translate(CX, CY); ctx.rotate(t * 1.2);
+    const seg = 12;
+    for (let i = 0; i < seg; i++) {
+      const a0 = (i / seg) * Math.PI * 2, a1 = a0 + Math.PI / seg * 0.7;
+      const hc = ph < 2 ? (i%2===0 ? '#00C8AA' : '#9B59F5') : (i%2===0 ? '#FFA620' : '#FF6B35');
+      ctx.beginPath(); ctx.arc(0, 0, r, a0, a1);
+      ctx.strokeStyle = hc; ctx.lineWidth = 3; ctx.stroke();
+    }
+    ctx.restore();
+    // Inner dark fill
+    ctx.save(); ctx.translate(CX, CY);
+    const id = ctx.createRadialGradient(-r*0.2, -r*0.2, 0, 0, 0, r*0.9);
+    id.addColorStop(0, 'rgba(10,30,25,0.97)'); id.addColorStop(1, 'rgba(8,8,14,0.96)');
+    ctx.beginPath(); ctx.arc(0, 0, r*0.9, 0, Math.PI*2); ctx.fillStyle = id; ctx.fill();
+    // Neural lines
+    for (let i = 0; i < 5; i++) {
+      const a = t * 0.35 + i * 1.26;
+      const x1 = Math.cos(a)*r*0.28, y1 = Math.sin(a)*r*0.28;
+      const x2 = Math.cos(a+1.1)*r*0.68, y2 = Math.sin(a+1.1)*r*0.68;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+      ctx.strokeStyle = ph < 2 ? 'rgba(0,200,170,0.3)' : 'rgba(255,150,50,0.3)';
+      ctx.lineWidth = 0.8; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x1,y1,1.5,0,Math.PI*2);
+      ctx.fillStyle = ph < 2 ? 'rgba(0,200,170,0.7)' : 'rgba(255,166,32,0.7)'; ctx.fill();
+    }
+    // Shine highlight
+    const sh = ctx.createRadialGradient(-r*0.28, -r*0.3, 0, 0, 0, r*0.9);
+    sh.addColorStop(0,'rgba(255,255,255,0.16)'); sh.addColorStop(0.5,'rgba(255,255,255,0)');
+    ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(0,0,r*0.9,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  /* ── Ingredient particle shapes ── */
+  function drawParticle(x, y, size, color, shape, t) {
+    ctx.save(); ctx.translate(x, y);
+    ctx.shadowColor = color; ctx.shadowBlur = 5; ctx.fillStyle = color;
+    if (shape === 'leaf') {
+      ctx.rotate(t * 0.8);
+      ctx.beginPath(); ctx.ellipse(0, 0, size*0.55, size*1.15, 0, 0, Math.PI*2); ctx.fill();
+    } else if (shape === 'grain') {
+      ctx.rotate(Math.PI*0.25);
+      ctx.beginPath(); ctx.ellipse(0, 0, size*0.45, size*1.0, 0, 0, Math.PI*2); ctx.fill();
+    } else if (shape === 'drop') {
+      ctx.scale(size/6, size/6);
+      ctx.beginPath(); ctx.moveTo(0,-5);
+      ctx.bezierCurveTo(3,-2,4,1,0,4);
+      ctx.bezierCurveTo(-4,1,-3,-2,0,-5);
+      ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(0, 0, size, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.shadowBlur = 0; ctx.restore();
+  }
+
+  /* ── Plated dish silhouette ── */
+  function drawPlate(alpha) {
+    const py = CY + 28;
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.ellipse(CX, py, 86, 22, 0, 0, Math.PI*2);
+    ctx.strokeStyle = '#FFA620'; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(CX, py, 70, 17, 0, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,166,32,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+    // Food dome
+    const dg = ctx.createRadialGradient(CX, py-10, 4, CX, py, 50);
+    dg.addColorStop(0, `rgba(255,166,32,${alpha*0.45})`);
+    dg.addColorStop(0.5, `rgba(255,107,53,${alpha*0.2})`);
+    dg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dg;
+    ctx.beginPath(); ctx.ellipse(CX, py, 60, 38, 0, Math.PI, Math.PI*2); ctx.fill();
+    // Garnish dots
+    const gc = ['#4CAF50','#FF6B35','#FFA620','#EF5350','#4CAF50'];
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath(); ctx.arc(CX - 24 + i*12, py-2, 2.2, 0, Math.PI*2);
+      ctx.fillStyle = gc[i]; ctx.shadowColor = gc[i]; ctx.shadowBlur = 4; ctx.fill(); ctx.shadowBlur = 0;
+    }
+    ctx.restore();
+  }
+
+  /* ── Animation loop ── */
+  function frame(now) {
+    const dt = Math.min((now - lastT) / 1000, 0.05);
+    lastT = now; gT += dt;
+
+    const elapsed = now - phaseStart;
+    if (phase < 3 && elapsed >= PHASE_DUR[phase]) {
+      phase++; phaseStart = now; setTextPhase(phase);
+    }
+    const pp = Math.min(elapsed / PHASE_DUR[phase], 1);
+
+    drawBG(gT);
+    ctx.clearRect(0, 0, W, H);
+
+    // Ambient radial glow
+    const amb = ctx.createRadialGradient(CX, CY, 0, CX, CY, 220);
+    amb.addColorStop(0, phase < 2 ? 'rgba(0,166,147,0.14)' : 'rgba(255,100,40,0.10)');
+    amb.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = amb; ctx.fillRect(0, 0, W, H);
+
+    /* PHASE 0 — fast orbit, magnetic pull toward end */
+    if (phase === 0) {
+      dataNodes.forEach(n => {
+        n.angle += n.speed * 0.016;
+        const x = CX + Math.cos(n.angle)*n.r, y = CY + Math.sin(n.angle)*n.r;
+        ctx.beginPath(); ctx.arc(x, y, n.size, 0, Math.PI*2);
+        ctx.shadowColor = n.color; ctx.shadowBlur = 5; ctx.fillStyle = n.color; ctx.fill(); ctx.shadowBlur = 0;
+      });
+      particles.forEach((p, i) => {
+        p.angle += p.speed * 0.016;
+        const pull = pp < 0.65 ? 0 : (pp - 0.65) / 0.35;
+        const r    = p.orbitR * (1 - pull * 0.65);
+        const x = CX + Math.cos(p.angle)*r, y = CY + Math.sin(p.angle)*r;
+        if (pull > 0.1) {
+          for (let tr = 1; tr <= 4; tr++) {
+            const ta = p.angle - tr*0.07;
+            const tx = CX + Math.cos(ta)*r, ty = CY + Math.sin(ta)*r;
+            ctx.beginPath(); ctx.arc(tx, ty, p.size*0.45, 0, Math.PI*2);
+            ctx.globalAlpha = pull*0.15; ctx.fillStyle = p.color; ctx.fill(); ctx.globalAlpha = 1;
+          }
+        }
+        drawParticle(x, y, p.size, p.color, p.shape, gT + i*0.3);
+      });
+    }
+
+    /* PHASE 1 — dissolve into orb, data streams, then reform outward */
+    else if (phase === 1) {
+      const inProg  = pp < 0.5 ? pp*2 : 1;
+      const outProg = pp > 0.5 ? (pp-0.5)*2 : 0;
+      dataNodes.forEach(n => {
+        n.angle += n.speed * 0.022;
+        const r = n.r * (1 - inProg*0.85);
+        const x = CX + Math.cos(n.angle)*r, y = CY + Math.sin(n.angle)*r;
+        ctx.globalAlpha = 1 - inProg*0.9;
+        ctx.beginPath(); ctx.arc(x, y, n.size*(1+inProg*0.5), 0, Math.PI*2);
+        ctx.shadowColor = n.color; ctx.shadowBlur = 8+inProg*8; ctx.fillStyle = n.color; ctx.fill(); ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+      });
+      particles.forEach((p, i) => {
+        p.angle += p.speed * 0.025;
+        let x, y, a;
+        if (pp < 0.5) {
+          const r = p.orbitR * 0.45 * (1 - inProg);
+          x = CX + Math.cos(p.angle)*r; y = CY + Math.sin(p.angle)*r; a = 1 - inProg*0.8;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(CX, CY);
+          ctx.strokeStyle = p.color; ctx.globalAlpha = inProg*0.18; ctx.lineWidth = 0.6; ctx.stroke(); ctx.globalAlpha = 1;
+        } else {
+          const r = p.orbitR * 0.55 * outProg;
+          x = CX + Math.cos(p.angle + outProg*Math.PI)*r;
+          y = CY + Math.sin(p.angle + outProg*Math.PI)*r*0.7;
+          a = outProg*0.85;
+        }
+        ctx.globalAlpha = a; drawParticle(x, y, p.size, p.color, 'circle', gT + i*0.3); ctx.globalAlpha = 1;
+      });
+    }
+
+    /* PHASE 2 — structured elliptical orbits, warm tone transition, plate emerges */
+    else if (phase === 2) {
+      dataNodes.forEach(n => {
+        n.angle += n.speed * 0.011;
+        const x = CX + Math.cos(n.angle)*n.r*(0.85+pp*0.3);
+        const y = CY + Math.sin(n.angle)*n.r*(0.85+pp*0.3)*0.7;
+        ctx.beginPath(); ctx.arc(x, y, n.size, 0, Math.PI*2);
+        ctx.fillStyle = n.color; ctx.shadowColor = n.color; ctx.shadowBlur = 4; ctx.fill(); ctx.shadowBlur = 0;
+      });
+      particles.forEach((p, i) => {
+        p.angle += p.speed * 0.011;
+        const wR = p.orbitR*(0.55 + pp*0.45);
+        const wA = p.angle + Math.sin(gT*2 + i*0.5)*0.18;
+        const x = CX + Math.cos(wA)*wR, y = CY + Math.sin(wA)*wR*0.6;
+        ctx.globalAlpha = 0.55 + Math.sin(gT*3+i)*0.2;
+        drawParticle(x, y, p.size*0.9, p.color, p.shape, gT + i*0.3);
+        ctx.globalAlpha = 1;
+      });
+      if (pp > 0.55) drawPlate((pp-0.55)*2.2*0.45);
+    }
+
+    /* PHASE 3 — slow, thoughtful plating; steam rises; golden done glow */
+    else if (phase === 3) {
+      particles.forEach((p, i) => {
+        p.angle += p.speed * 0.004;
+        const r = p.orbitR*(0.7 + pp*0.35);
+        const x = CX + Math.cos(p.angle)*r, y = CY + Math.sin(p.angle)*r*0.5;
+        ctx.globalAlpha = Math.max(0, (1-pp)*0.5);
+        drawParticle(x, y, p.size*0.6, p.color, 'circle', gT); ctx.globalAlpha = 1;
+      });
+      drawPlate(0.45 + pp*0.5);
+      // Steam particles
+      for (let s = 0; s < 6; s++) {
+        const sx = CX - 22 + s*9 + Math.sin(gT*2.2+s)*4;
+        const sy = CY - 18 - s*10 - ((gT*25 + s*18) % 38);
+        const sa = Math.max(0, 1-((gT*25+s*18)%38)/38) * pp * 0.55;
+        ctx.beginPath(); ctx.arc(sx, sy, 2.5+s*0.4, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,220,175,${sa})`; ctx.fill();
+      }
+      // Golden completion glow
+      if (pp > 0.72) {
+        const ga2 = (pp-0.72)*3.6*0.28;
+        const dg = ctx.createRadialGradient(CX, CY, 0, CX, CY, 190);
+        dg.addColorStop(0, `rgba(255,166,32,${ga2})`); dg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle = dg; ctx.fillRect(0, 0, W, H);
+      }
+    }
+
+    drawOrb(gT, phase);
+
+    if (phase < 3 || pp < 0.96) {
+      loaderRAF = requestAnimationFrame(frame);
+    } else {
+      setTimeout(() => goTo('s-success'), 500);
+    }
+  }
+
+  if (loaderRAF) cancelAnimationFrame(loaderRAF);
+  loaderRAF = requestAnimationFrame(frame);
 }
 
 function goMainApp() {
@@ -1512,15 +1898,42 @@ function goMainApp() {
   document.getElementById('nav-home').classList.add('active');
 }
 
-// ── TABS ──
+// ── TABS (Plan screen — underline style) ──
 function switchTab(el, context) {
   el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  if (context === 'ingr') {
-    const isEmpty = el.textContent.includes('Available');
-    document.getElementById('ingr-empty').style.display = isEmpty ? 'flex' : 'none';
-    document.getElementById('ingr-list').style.display = isEmpty ? 'none' : 'block';
-  }
+}
+
+// ── INGREDIENT PILL TABS with liquid ripple ──
+function switchIngrTab(el, e, idx) {
+  const bar    = document.getElementById('ingr-tab-bar');
+  const slider = document.getElementById('ingr-slider');
+  const tabs   = bar.querySelectorAll('.ingr-tab');
+
+  tabs.forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  // Slide the pill indicator: left tab → left:2px, right tab → left:50%
+  slider.style.left = idx === 0 ? '2px' : 'calc(50%)';
+
+  // Ripple burst at tap point
+  spawnRipple(el, e);
+
+  // Fade content
+  const empty = document.getElementById('ingr-empty');
+  const list  = document.getElementById('ingr-list');
+  empty.style.opacity = '0';
+  list.style.opacity  = '0';
+  setTimeout(() => {
+    empty.style.display = idx === 0 ? 'flex' : 'none';
+    list.style.display  = idx === 0 ? 'none' : 'block';
+    const showing = idx === 0 ? empty : list;
+    showing.style.opacity = '0';
+    requestAnimationFrame(() => {
+      showing.style.transition = 'opacity 0.18s ease';
+      showing.style.opacity = '1';
+    });
+  }, 130);
 }
 
 // ── INGREDIENTS ──
