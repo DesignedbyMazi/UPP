@@ -152,9 +152,10 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 .search-box input::placeholder{color:var(--gray2);}
 
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
   padding:14px 24px;border-radius:var(--r-full);font-size:14px;font-weight:600;
   cursor:pointer;border:none;font-family:inherit;transition:opacity .15s;
+  min-width:0;
 }
 .btn:active{opacity:.8;}
 .btn-primary{background:var(--accent);color:var(--white);}
@@ -164,6 +165,33 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 .btn-sm{padding:8px 16px;font-size:12px;}
 .btn-full{width:100%;}
 .btn-row{display:flex;gap:12px;padding:12px 16px;flex-shrink:0;}
+
+/* ── ONBOARDING QUESTION SCREENS ── */
+.ob-content{padding:40px 16px 0;flex:1;overflow-y:auto;}
+.ob-title{font-size:20px;font-weight:500;color:var(--white);line-height:30px;margin:0 0 4px;}
+.ob-sub{font-size:16px;font-weight:400;color:var(--gray1);line-height:24px;margin:0 0 20px;}
+
+/* ── FOCUS ACCORDION ── */
+.focus-option{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;cursor:pointer;font-size:14px;color:var(--gray1);
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background .12s;
+}
+.focus-option:last-child{border-bottom:none;}
+.focus-option:active{background:rgba(255,255,255,0.04);}
+.focus-option.active{color:var(--white);}
+.focus-option .focus-check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;opacity:0;transition:opacity .2s;
+}
+.focus-option.active .focus-check{opacity:1;}
+.focus-body{
+  overflow:hidden;max-height:0;
+  transition:max-height 0.35s cubic-bezier(0.22,1,0.36,1);
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.focus-body.open{max-height:400px;}
 
 .card{background:var(--surface);border-radius:var(--r-lg);padding:16px;}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px;}
@@ -517,15 +545,13 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – AVAILABLE INGREDIENTS (Step 1/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-ingredients">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash"></div><div class="ob-dash"></div>
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">Do You Have Any<br>Ingredient Available?</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:16px;">Kindly pick the ingredient you have at home</p>
+  <div class="ob-content">
+    <h2 class="ob-title">Do You Have Any<br>Ingredient Available?</h2>
+    <p class="ob-sub">Kindly pick the ingredient you have at home</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -541,7 +567,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" style="flex:1" onclick="goTo('s-splash')">Skip to homepage</button>
+    <button class="btn btn-secondary" style="flex:1" onclick="goTo('s-home-empty')">Skip to homepage</button>
     <button class="btn btn-primary" style="flex:1" onclick="goTo('s-ob-allergies')">Next</button>
   </div>
 </div>
@@ -550,15 +576,13 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – ALLERGIES (Step 2/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-allergies">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash"></div>
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">Do you have any<br>allergies?</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:16px;">Kindly pick foods you react to</p>
+  <div class="ob-content">
+    <h2 class="ob-title">Do you have any<br>allergies?</h2>
+    <p class="ob-sub">Kindly pick foods you react to</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -583,15 +607,13 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – DIET (Step 3/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-diet">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">Tell Us About<br>Your Diet</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:16px;">Choose the eating style that best fits you</p>
+  <div class="ob-content">
+    <h2 class="ob-title">Tell Us About<br>Your Diet</h2>
+    <p class="ob-sub">Choose the eating style that best fits you</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -616,15 +638,13 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – FAVORITE FOOD (Step 4/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-favfood">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
     <div class="ob-dash done"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">What Foods Make<br>You Happy?</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:16px;">Pick your go-to favorites</p>
+  <div class="ob-content">
+    <h2 class="ob-title">What Foods Make<br>You Happy?</h2>
+    <p class="ob-sub">Pick your go-to favorites</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray1)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -649,15 +669,13 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – COOKING TIME (Step 5/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-cooking">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">How Much Time Do<br>You Spend Cooking?</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:20px;">Let us know your average weekly cooking hours</p>
+  <div class="ob-content">
+    <h2 class="ob-title">How Much Time Do<br>You Spend Cooking?</h2>
+    <p class="ob-sub">Let us know your average weekly cooking hours</p>
 
     <div style="background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;cursor:pointer;" onclick="toggleCookDropdown()">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -683,49 +701,95 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      SCREEN: OB – NUTRITION GOALS (Step 6/6)
 ═══════════════════════════════════════════════ -->
 <div class="screen" id="s-ob-nutrition">
-  <div class="sbar"><span class="sbar-time">9:41</span></div>
-  <div class="dynamic-island"></div>
   <div class="ob-progress">
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
   </div>
-  <div style="padding:24px 16px 0;flex:1;overflow-y:auto;">
-    <h2 style="font-size:20px;font-weight:800;color:var(--white);line-height:1.3;margin-bottom:6px;">Define Your<br>Nutrition Goals</h2>
-    <p style="font-size:13px;color:var(--gray1);margin-bottom:20px;">Share your daily targets or health priorities</p>
+  <div class="ob-content">
+    <h2 class="ob-title">Define Your<br>Growth</h2>
+    <p class="ob-sub">Share your daily targets or health priorities</p>
 
-    <div style="background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px;cursor:pointer;" onclick="toggleNutGoal()">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:14px;color:var(--gray1);" id="nut-goal-label">What's your nutrition goal?</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray1)" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+    <!-- Nutrition goal dropdown -->
+    <div style="background:var(--surface);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;">
+      <div style="padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="toggleNutGoal()">
+        <span style="font-size:14px;" id="nut-goal-label" style="color:var(--gray1);">What's your nutrition goal?</span>
+        <svg id="nut-goal-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray1)" stroke-width="2" style="flex-shrink:0;transition:transform .3s cubic-bezier(.22,1,.36,1);"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="focus-body" id="nut-goal-dropdown">
+        <div class="focus-option" onclick="pickNutGoal(this,'Maintain my current weight')">
+          <span>Maintain my current weight</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" onclick="pickNutGoal(this,'Lose weight gradually')">
+          <span>Lose weight gradually</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" onclick="pickNutGoal(this,'Gain weight')">
+          <span>Gain weight</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" onclick="pickNutGoal(this,'Build muscle tone')">
+          <span>Build muscle tone</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" onclick="pickNutGoal(this,'Eat healthier')">
+          <span>Eat healthier</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
       </div>
     </div>
-    <div class="dropdown-list" id="nut-goal-dropdown" style="display:none;margin-bottom:12px;">
-      <div class="dropdown-item selected" onclick="pickNutGoal(this,'Maintain my current weight')">Maintain my current weight</div>
-      <div class="dropdown-item" onclick="pickNutGoal(this,'Lose weight gradually')">Lose weight gradually</div>
-      <div class="dropdown-item" onclick="pickNutGoal(this,'Gain weight quickly')">Gain weight quickly</div>
-      <div class="dropdown-item" onclick="pickNutGoal(this,'Build muscle tone')">Build muscle tone</div>
-      <div class="dropdown-item" onclick="pickNutGoal(this,'Eat healthier')">Eat healthier</div>
+
+    <!-- What do you want to focus on — interactive accordion -->
+    <div style="background:var(--surface);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;">
+      <div style="padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="toggleFocusAccordion()">
+        <span style="font-size:14px;color:var(--gray1);" id="focus-label">What do you want to focus on?</span>
+        <svg id="focus-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray1)" stroke-width="2" style="flex-shrink:0;transition:transform .3s cubic-bezier(.22,1,.36,1);"><path d="M4 6l4 4 4-4"/></svg>
+      </div>
+      <div class="focus-body" id="focus-options">
+        <div class="focus-option" data-val="💪 High protein intake" onclick="toggleFocusOption(this)">
+          <span>💪 High protein intake</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="🥗 Cut down carbs" onclick="toggleFocusOption(this)">
+          <span>🥗 Cut down carbs</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="🫙 Reduce fat intake" onclick="toggleFocusOption(this)">
+          <span>🫙 Reduce fat intake</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="🥦 Eat more vegetables" onclick="toggleFocusOption(this)">
+          <span>🥦 Eat more vegetables</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="🍬 Reduce sugar" onclick="toggleFocusOption(this)">
+          <span>🍬 Reduce sugar</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="⚖️ Balanced macros" onclick="toggleFocusOption(this)">
+          <span>⚖️ Balanced macros</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="💧 Improve hydration" onclick="toggleFocusOption(this)">
+          <span>💧 Improve hydration</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+        <div class="focus-option" data-val="🚫 Less processed food" onclick="toggleFocusOption(this)">
+          <span>🚫 Less processed food</span>
+          <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        </div>
+      </div>
     </div>
 
-    <div style="background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px;cursor:pointer;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:14px;color:var(--gray1);">What do you want to focus on most</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray1)" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-      </div>
-      <div class="chips-row" style="margin-top:8px;">
-        <span class="chip selected btn-sm">Low fat <span class="chip-x">×</span></span>
-        <span class="chip selected btn-sm">Cut down carbs <span class="chip-x">×</span></span>
-        <span class="chip selected btn-sm">Eat veggies <span class="chip-x">×</span></span>
-      </div>
-    </div>
-
+    <!-- Weight input -->
     <div style="margin-bottom:16px;">
       <label style="font-size:13px;color:var(--gray1);display:block;margin-bottom:8px;">Weight (kg)</label>
       <input type="number" placeholder="Enter your current weight" style="width:100%;background:var(--surface);border:none;outline:none;border-radius:var(--r-lg);padding:14px 16px;color:var(--white);font-size:14px;font-family:inherit;">
     </div>
 
-    <div>
-      <label style="font-size:13px;color:var(--gray1);display:block;margin-bottom:8px;">How much calories are you looking to gain?</label>
+    <!-- Calorie slider -->
+    <div style="margin-bottom:8px;">
+      <label style="font-size:13px;color:var(--gray1);display:block;margin-bottom:8px;">How many calories are you targeting daily?</label>
       <div style="padding:0 4px;">
         <input type="range" id="cal-slider" min="0" max="3000" value="600" oninput="updateSlider(this)" style="width:100%;accent-color:var(--accent);">
         <div style="display:flex;justify-content:flex-end;margin-top:4px;">
@@ -734,9 +798,10 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
       </div>
     </div>
   </div>
+
   <div class="btn-row">
-    <button class="btn btn-secondary" style="flex:1" onclick="goTo('s-ob-cooking')">Back</button>
-    <button class="btn btn-primary" style="flex:1" onclick="startLoader()">Generate Meal Plan</button>
+    <button class="btn btn-secondary" style="flex:0 0 80px;" onclick="goTo('s-ob-cooking')">Back</button>
+    <button class="btn btn-primary" style="flex:1;" onclick="startLoader()">Generate Meal Plan</button>
   </div>
 </div>
 
@@ -1579,16 +1644,49 @@ function selectCook(el, val) {
 }
 
 // ── NUTRITION GOAL ──
+// ── NUTRITION GOAL ACCORDION ──
 function toggleNutGoal() {
-  const d = document.getElementById('nut-goal-dropdown');
-  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  const body  = document.getElementById('nut-goal-dropdown');
+  const chev  = document.getElementById('nut-goal-chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
 }
 function pickNutGoal(el, val) {
-  el.closest('.dropdown-list').querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('nut-goal-label').textContent = val;
-  document.getElementById('nut-goal-label').style.color = 'var(--white)';
-  document.getElementById('nut-goal-dropdown').style.display = 'none';
+  // Clear previous selection
+  el.closest('.focus-body').querySelectorAll('.focus-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  // Update label
+  const label = document.getElementById('nut-goal-label');
+  label.textContent = val;
+  label.style.color = 'var(--white)';
+  // Collapse
+  const body = document.getElementById('nut-goal-dropdown');
+  const chev = document.getElementById('nut-goal-chevron');
+  body.classList.remove('open');
+  chev.style.transform = 'rotate(0deg)';
+}
+
+// ── FOCUS ACCORDION (multi-select) ──
+function toggleFocusAccordion() {
+  const body = document.getElementById('focus-options');
+  const chev = document.getElementById('focus-chevron');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+function toggleFocusOption(el) {
+  el.classList.toggle('active');
+  const selected = [...document.querySelectorAll('#focus-options .focus-option.active')]
+    .map(o => o.dataset.val);
+  const label = document.getElementById('focus-label');
+  if (selected.length) {
+    label.textContent = selected.length === 1 ? selected[0] : selected.length + ' goals selected';
+    label.style.color = 'var(--white)';
+  } else {
+    label.textContent = 'What do you want to focus on?';
+    label.style.color = 'var(--gray1)';
+  }
 }
 
 // ── SLIDER ──
