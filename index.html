@@ -168,8 +168,10 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 
 /* ── ONBOARDING QUESTION SCREENS ── */
 .ob-content{padding:40px 16px 0;flex:1;overflow-y:auto;}
-.ob-title{font-size:20px;font-weight:500;color:var(--white);line-height:30px;margin:0 0 4px;}
+.ob-title{font-size:20px;font-weight:600;color:var(--white);line-height:30px;margin:0 0 4px;}
 .ob-sub{font-size:16px;font-weight:400;color:var(--gray1);line-height:24px;margin:0 0 20px;}
+/* Nutrition-goal page — title in inactive grey (less harsh on the eye) */
+#s-ob-nutrition .ob-title{color:var(--gray1);}
 
 /* ── FOCUS ACCORDION ── */
 .focus-option{
@@ -225,6 +227,9 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
   display:flex;align-items:center;gap:10px;padding:13px 16px;
   font-size:14px;color:var(--white);cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);
 }
+.dropdown-item .di-icon{flex-shrink:0;font-size:16px;line-height:1;width:20px;text-align:center;}
+/* Focus-option rows: icon–text gap */
+.focus-option .fo-icon{flex-shrink:0;font-size:16px;line-height:1;width:20px;text-align:center;}
 .dropdown-item:last-child{border-bottom:none;}
 .dropdown-item:hover,.dropdown-item.selected{background:var(--accent-dim);}
 .dropdown-item.selected{color:var(--accent);}
@@ -262,14 +267,23 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 
 /* ── CALENDAR STRIP ── */
 .cal-strip{display:flex;justify-content:space-between;padding:0 4px;margin:12px 0;}
-.cal-day{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
-.cal-day-name{font-size:10px;color:var(--gray1);font-weight:500;}
+.cal-day{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:opacity .15s;}
+.cal-day-name{font-size:10px;color:var(--gray1);font-weight:500;transition:color .15s;}
 .cal-date{
   width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:600;color:var(--gray1);
+  font-size:13px;font-weight:600;color:var(--gray1);transition:background .15s,color .15s,border-color .15s;
 }
+/* today */
 .cal-day.today .cal-date{background:var(--white);color:#0D0D0D;}
+/* selected / active */
 .cal-day.active .cal-date{border:1.5px solid var(--accent);color:var(--white);}
+/* past days — slightly lighter (already var(--gray1)), keep cursor clickable */
+.cal-day.past .cal-date{color:var(--gray1);}
+.cal-day.past:hover .cal-date{background:rgba(255,255,255,0.07);}
+/* future days — darker inactive grey, no interaction */
+.cal-day.future{cursor:default;pointer-events:none;}
+.cal-day.future .cal-date{color:#404040;}
+.cal-day.future .cal-day-name{color:#404040;}
 
 /* ── STREAK ── */
 .streak-row{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
@@ -684,11 +698,11 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
       </div>
     </div>
     <div class="dropdown-list" id="cook-dropdown" style="display:none;margin-top:4px;">
-      <div class="dropdown-item selected" onclick="selectCook(this,'🕒 Rarely cook · 0 to 2hrs weekly')">🕒 Rarely cook <span style="color:var(--gray1);font-size:12px">· 0 to 2hrs weekly</span></div>
-      <div class="dropdown-item" onclick="selectCook(this,'🍳 Cook sometimes · 3 to 6 hours weekly')">🍳 Cook sometimes <span style="color:var(--gray1);font-size:12px">· 3 to 6 hours weekly</span></div>
-      <div class="dropdown-item" onclick="selectCook(this,'🥘 Cook regularly · 7 to 10 hours weekly')">🥘 Cook regularly <span style="color:var(--gray1);font-size:12px">· 7 to 10 hours weekly</span></div>
-      <div class="dropdown-item" onclick="selectCook(this,'💪 Love cooking · 11 to 15 hours weekly')">💪 Love cooking <span style="color:var(--gray1);font-size:12px">· 11 to 15 hours weekly</span></div>
-      <div class="dropdown-item" onclick="selectCook(this,'👨‍🍳 Always · 16+ hours weekly')">👨‍🍳 Always <span style="color:var(--gray1);font-size:12px">· 16+ hours weekly</span></div>
+      <div class="dropdown-item selected" onclick="selectCook(this,'🕒 Rarely cook · 0 to 2hrs weekly')"><span class="di-icon">🕒</span><span>Rarely cook <span style="color:var(--gray1);font-size:12px">· 0 to 2hrs weekly</span></span></div>
+      <div class="dropdown-item" onclick="selectCook(this,'🍳 Cook sometimes · 3 to 6 hours weekly')"><span class="di-icon">🍳</span><span>Cook sometimes <span style="color:var(--gray1);font-size:12px">· 3 to 6 hours weekly</span></span></div>
+      <div class="dropdown-item" onclick="selectCook(this,'🥘 Cook regularly · 7 to 10 hours weekly')"><span class="di-icon">🥘</span><span>Cook regularly <span style="color:var(--gray1);font-size:12px">· 7 to 10 hours weekly</span></span></div>
+      <div class="dropdown-item" onclick="selectCook(this,'💪 Love cooking · 11 to 15 hours weekly')"><span class="di-icon">💪</span><span>Love cooking <span style="color:var(--gray1);font-size:12px">· 11 to 15 hours weekly</span></span></div>
+      <div class="dropdown-item" onclick="selectCook(this,'👨‍🍳 Always · 16+ hours weekly')"><span class="di-icon">👨‍🍳</span><span>Always <span style="color:var(--gray1);font-size:12px">· 16+ hours weekly</span></span></div>
     </div>
   </div>
   <div class="btn-row">
@@ -747,35 +761,35 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
       </div>
       <div class="focus-body" id="focus-options">
         <div class="focus-option" data-val="💪 High protein intake" onclick="toggleFocusOption(this)">
-          <span>💪 High protein intake</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">💪</span><span>High protein intake</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="🥗 Cut down carbs" onclick="toggleFocusOption(this)">
-          <span>🥗 Cut down carbs</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">🥗</span><span>Cut down carbs</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="🫙 Reduce fat intake" onclick="toggleFocusOption(this)">
-          <span>🫙 Reduce fat intake</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">🫙</span><span>Reduce fat intake</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="🥦 Eat more vegetables" onclick="toggleFocusOption(this)">
-          <span>🥦 Eat more vegetables</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">🥦</span><span>Eat more vegetables</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="🍬 Reduce sugar" onclick="toggleFocusOption(this)">
-          <span>🍬 Reduce sugar</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">🍬</span><span>Reduce sugar</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="⚖️ Balanced macros" onclick="toggleFocusOption(this)">
-          <span>⚖️ Balanced macros</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">⚖️</span><span>Balanced macros</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="💧 Improve hydration" onclick="toggleFocusOption(this)">
-          <span>💧 Improve hydration</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">💧</span><span>Improve hydration</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
         <div class="focus-option" data-val="🚫 Less processed food" onclick="toggleFocusOption(this)">
-          <span>🚫 Less processed food</span>
+          <span style="display:flex;align-items:center;gap:8px;"><span class="fo-icon">🚫</span><span>Less processed food</span></span>
           <span class="focus-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
         </div>
       </div>
@@ -834,6 +848,22 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
         <span id="ldr-pill-text" style="font-size:11px;color:#00A693;font-weight:500;letter-spacing:.15px;"></span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DAY DETAIL (calendar tap)
+═══════════════════════════════════════════════ -->
+<div class="screen scroll-y" id="s-day-detail">
+  <div class="page-header" style="flex-shrink:0;">
+    <button class="icon-btn" onclick="goTo('s-home')" style="width:36px;height:36px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div id="day-detail-heading" style="font-size:16px;font-weight:600;color:var(--white);"></div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="content" id="day-detail-content" style="padding-top:8px;">
+    <!-- Dynamically populated by showDayDetail() -->
   </div>
 </div>
 
@@ -910,16 +940,8 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
   </div>
   <div class="content" style="padding-top:0;">
 
-    <!-- ① Calendar strip -->
-    <div class="cal-strip" style="margin-bottom:24px;">
-      <div class="cal-day"><div class="cal-day-name">Mon</div><div class="cal-date">26</div></div>
-      <div class="cal-day"><div class="cal-day-name">Tue</div><div class="cal-date">27</div></div>
-      <div class="cal-day"><div class="cal-day-name">Wed</div><div class="cal-date">28</div></div>
-      <div class="cal-day today"><div class="cal-day-name">Thu</div><div class="cal-date">29</div></div>
-      <div class="cal-day"><div class="cal-day-name">Fri</div><div class="cal-date">30</div></div>
-      <div class="cal-day"><div class="cal-day-name">Sat</div><div class="cal-date">31</div></div>
-      <div class="cal-day"><div class="cal-day-name">Sun</div><div class="cal-date">01</div></div>
-    </div>
+    <!-- ① Calendar strip — populated dynamically by buildCalendar() -->
+    <div class="cal-strip" style="margin-bottom:24px;"></div>
 
     <!-- ② Meal Plan header — 24px below calendar -->
     <div class="section-header" style="margin-bottom:16px;">
@@ -1508,6 +1530,7 @@ function goTo(id) {
   document.getElementById(id).classList.add('active');
   const mainScreens = ['s-home','s-home-empty','s-plan','s-ingredients','s-feed'];
   document.getElementById('bnav').style.display = mainScreens.includes(id) ? 'flex' : 'none';
+  if (id === 's-home') buildCalendar();
 }
 
 function histBack() {
@@ -1787,6 +1810,17 @@ function startLoader() {
     color: ['#9B59F5','#5B4FE8','#00C8AA','#00A693','#7C4DFF','#00BFA5','#64B5F6'][i],
   }));
 
+  // Jelly blobs — organic, wobbling shapes that orbit the orb
+  const BLOB_COLORS_COOL = ['#00C8AA','#9B59F5','#00BFA5'];
+  const BLOB_COLORS_WARM = ['#FFA620','#FF6B35','#FFD54F'];
+  const blobs = [
+    { angle: 0.0,              orbitR: 98,  speed:  0.20, baseSize: 11, seed: 0.0   },
+    { angle: Math.PI * 0.66,   orbitR: 115, speed: -0.15, baseSize: 15, seed: 2.09  },
+    { angle: Math.PI * 1.33,   orbitR: 104, speed:  0.18, baseSize:  9, seed: 4.19  },
+    { angle: Math.PI * 0.33,   orbitR: 88,  speed: -0.24, baseSize:  7, seed: 1.05  },
+    { angle: Math.PI * 1.0,    orbitR: 120, speed:  0.13, baseSize: 12, seed: 3.14  },
+  ];
+
   /* ── BG: holographic grid ── */
   function drawBG(t) {
     bgCtx.clearRect(0, 0, W, H);
@@ -1892,6 +1926,89 @@ function startLoader() {
       ctx.fillStyle = gc[i]; ctx.shadowColor = gc[i]; ctx.shadowBlur = 4; ctx.fill(); ctx.shadowBlur = 0;
     }
     ctx.restore();
+  }
+
+  /* ── Jelly blob helper ── */
+  function hexRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function drawBlob(bx, by, baseR, color, alpha, t, seed) {
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.globalAlpha = alpha;
+
+    // 7 control points with oscillating radius → organic jelly silhouette
+    const N = 7;
+    const pts = [];
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2;
+      // Each point pulses at a slightly different frequency for the wobble
+      const r = baseR * (0.78 + 0.32 * Math.sin(t * 2.4 + seed + i * 0.92));
+      pts.push([Math.cos(a) * r, Math.sin(a) * r]);
+    }
+
+    // Midpoint-smoothed blob path (quadratic bezier through midpoints)
+    ctx.beginPath();
+    const start = [(pts[N-1][0] + pts[0][0]) / 2, (pts[N-1][1] + pts[0][1]) / 2];
+    ctx.moveTo(start[0], start[1]);
+    for (let i = 0; i < N; i++) {
+      const cur  = pts[i];
+      const next = pts[(i + 1) % N];
+      ctx.quadraticCurveTo(cur[0], cur[1], (cur[0]+next[0])/2, (cur[1]+next[1])/2);
+    }
+    ctx.closePath();
+
+    // Radial gradient fill — bright core, transparent edge
+    const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, baseR * 1.1);
+    grd.addColorStop(0,   hexRgba(color, 0.55));
+    grd.addColorStop(0.5, hexRgba(color, 0.22));
+    grd.addColorStop(1,   hexRgba(color, 0.0));
+    ctx.fillStyle = grd;
+
+    // Glow halo
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = baseR * 0.9;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  function drawBlobs(t, ph, pp) {
+    const blobColors = ph < 2 ? BLOB_COLORS_COOL : BLOB_COLORS_WARM;
+    blobs.forEach((b, i) => {
+      // Advance orbital angle
+      b.angle += b.speed * 0.016;
+
+      // Size & alpha vary per phase
+      let sizeScale = 1, alpha = 0;
+      if (ph === 0) {
+        // Grow in over first 40% of phase, full through end
+        alpha     = Math.min(pp / 0.4, 1) * 0.72;
+        sizeScale = 0.7 + pp * 0.3;
+      } else if (ph === 1) {
+        // Dissolve toward orb in second half
+        alpha     = pp < 0.5 ? 0.72 : 0.72 * (1 - (pp - 0.5) * 2);
+        sizeScale = pp < 0.5 ? 1 : 1 - (pp - 0.5) * 1.4;
+      } else if (ph === 2) {
+        // Re-emerge from orb, drift outward
+        alpha     = Math.min(pp / 0.35, 1) * 0.65;
+        sizeScale = 0.4 + pp * 0.7;
+      } else {
+        // Phase 3: fade out as plating takes over
+        alpha     = (1 - pp) * 0.45;
+        sizeScale = 1 - pp * 0.5;
+      }
+
+      if (alpha <= 0.01 || sizeScale <= 0) return;
+
+      const orbitR = b.orbitR;
+      const bx = CX + Math.cos(b.angle) * orbitR;
+      const by = CY + Math.sin(b.angle) * orbitR * 0.8; // slight vertical squash
+      const color = blobColors[i % blobColors.length];
+      drawBlob(bx, by, b.baseSize * sizeScale, color, alpha, t, b.seed);
+    });
   }
 
   /* ── Animation loop ── */
@@ -2018,6 +2135,7 @@ function startLoader() {
       }
     }
 
+    drawBlobs(gT, phase, pp);
     drawOrb(gT, phase);
 
     if (phase < 3 || pp < 0.96) {
@@ -2036,6 +2154,137 @@ function goMainApp() {
   document.getElementById('bnav').style.display = 'flex';
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.getElementById('nav-home').classList.add('active');
+  buildCalendar();
+}
+
+// ── INTERACTIVE CALENDAR ──────────────────────────────────
+const DAY_MEALS = {
+  0: [ // Sun
+    { time:'08:00 AM', label:'Breakfast', name:'Oatmeal with Berries',      kcal:320, protein:'9g',  fat:'6g',  carbs:'54g' },
+    { time:'12:30 PM', label:'Lunch',     name:'Grilled Chicken Wrap',      kcal:490, protein:'34g', fat:'14g', carbs:'42g' },
+    { time:'07:00 PM', label:'Dinner',    name:'Baked Salmon & Veggies',    kcal:520, protein:'40g', fat:'18g', carbs:'28g' },
+  ],
+  1: [ // Mon
+    { time:'07:30 AM', label:'Breakfast', name:'Avocado Egg Toast',         kcal:420, protein:'24g', fat:'22g', carbs:'32g' },
+    { time:'01:00 PM', label:'Lunch',     name:'Quinoa Salad Bowl',         kcal:460, protein:'18g', fat:'16g', carbs:'52g' },
+    { time:'07:30 PM', label:'Dinner',    name:'Turkey Stir-fry',           kcal:540, protein:'38g', fat:'20g', carbs:'34g' },
+  ],
+  2: [ // Tue
+    { time:'08:00 AM', label:'Breakfast', name:'Greek Yoghurt & Granola',   kcal:350, protein:'16g', fat:'8g',  carbs:'48g' },
+    { time:'12:00 PM', label:'Lunch',     name:'Lentil Soup & Bread',       kcal:430, protein:'22g', fat:'6g',  carbs:'68g' },
+    { time:'07:00 PM', label:'Dinner',    name:'Chicken & Sweet Potato',    kcal:580, protein:'42g', fat:'14g', carbs:'48g' },
+  ],
+  3: [ // Wed
+    { time:'07:00 AM', label:'Breakfast', name:'Smoothie Bowl',             kcal:380, protein:'12g', fat:'10g', carbs:'58g' },
+    { time:'01:00 PM', label:'Lunch',     name:'Tuna Nicoise Salad',        kcal:440, protein:'32g', fat:'18g', carbs:'24g' },
+    { time:'07:00 PM', label:'Dinner',    name:'Pasta Primavera',           kcal:510, protein:'20g', fat:'12g', carbs:'72g' },
+  ],
+  4: [ // Thu
+    { time:'08:30 AM', label:'Breakfast', name:'Avocado Egg Toast',         kcal:420, protein:'24g', fat:'22g', carbs:'32g' },
+    { time:'12:30 PM', label:'Lunch',     name:'Veggie Buddha Bowl',        kcal:470, protein:'16g', fat:'14g', carbs:'62g' },
+    { time:'07:30 PM', label:'Dinner',    name:'Grilled Sea Bass',          kcal:490, protein:'36g', fat:'16g', carbs:'22g' },
+  ],
+  5: [ // Fri
+    { time:'07:30 AM', label:'Breakfast', name:'Banana Pancakes',           kcal:410, protein:'14g', fat:'10g', carbs:'66g' },
+    { time:'01:00 PM', label:'Lunch',     name:'Chicken Caesar Salad',      kcal:450, protein:'34g', fat:'20g', carbs:'20g' },
+    { time:'07:00 PM', label:'Dinner',    name:'Beef Tacos (x2)',           kcal:560, protein:'36g', fat:'22g', carbs:'46g' },
+  ],
+  6: [ // Sat
+    { time:'09:00 AM', label:'Breakfast', name:'French Toast',              kcal:440, protein:'16g', fat:'14g', carbs:'58g' },
+    { time:'01:30 PM', label:'Lunch',     name:'Poke Bowl',                 kcal:520, protein:'30g', fat:'18g', carbs:'56g' },
+    { time:'08:00 PM', label:'Dinner',    name:'Mushroom Risotto',          kcal:580, protein:'18g', fat:'16g', carbs:'82g' },
+  ],
+};
+
+function buildCalendar() {
+  const strip = document.querySelector('#s-home .cal-strip');
+  if (!strip) return;
+
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Get Monday of the current week
+  const dow    = today.getDay(); // 0=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dow + 6) % 7));
+
+  strip.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+
+    const isPast   = d < today;
+    const isToday  = d.getTime() === today.getTime();
+    const isFuture = d > today;
+
+    let cls = 'cal-day';
+    if      (isToday)  cls += ' today';
+    else if (isPast)   cls += ' past';
+    else if (isFuture) cls += ' future';
+
+    const dateISO = d.toISOString().split('T')[0];
+    const dateNum = String(d.getDate()).padStart(2, '0');
+    const dayName = DAY_NAMES[d.getDay()];
+
+    const el = document.createElement('div');
+    el.className    = cls;
+    el.dataset.date = dateISO;
+    el.dataset.dow  = d.getDay();
+    el.innerHTML    = `<div class="cal-day-name">${dayName}</div><div class="cal-date">${dateNum}</div>`;
+
+    if (!isFuture) {
+      el.addEventListener('click', function () {
+        // Remove active from all, set active on clicked
+        strip.querySelectorAll('.cal-day').forEach(c => c.classList.remove('active'));
+        if (!isToday) el.classList.add('active');
+        showDayDetail(d, dayName, dateISO);
+      });
+    }
+    strip.appendChild(el);
+  }
+}
+
+function showDayDetail(date, dayName, dateISO) {
+  // Format heading e.g. "Monday, 7 Apr"
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const heading = `${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()]}, ${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  document.getElementById('day-detail-heading').textContent = heading;
+
+  const dow   = date.getDay();
+  const meals = DAY_MEALS[dow] || DAY_MEALS[1];
+  const now   = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  let html = `<p style="font-size:12px;color:var(--gray1);margin:0 0 20px;">
+    ${isToday ? "Today's meals" : dateISO === new Date(now - 864e5).toISOString().split('T')[0] ? "Yesterday's meals" : "Meals for this day"}
+  </p>`;
+
+  meals.forEach(m => {
+    html += `
+    <p style="font-size:12px;color:var(--gray1);margin:0 0 10px;">${m.label}</p>
+    <div class="meal-card" style="margin-bottom:20px;">
+      <div class="meal-card-top">
+        <div style="width:56px;height:56px;border-radius:10px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">🍽️</div>
+        <div class="meal-info">
+          <div class="meal-name">${m.name}</div>
+          <div class="meal-macros">${m.kcal} kcal · ${m.protein} protein · ${m.fat} fat · ${m.carbs} carbs</div>
+        </div>
+        <span class="meal-time-badge">${m.time}</span>
+      </div>
+    </div>`;
+  });
+
+  // Daily total
+  const totalKcal = meals.reduce((s, m) => s + m.kcal, 0);
+  html += `
+  <div style="background:var(--surface);border-radius:var(--r-lg);padding:16px;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+    <span style="font-size:13px;color:var(--gray1);">Total calories</span>
+    <span style="font-size:16px;font-weight:700;color:var(--white);">${totalKcal} kcal</span>
+  </div>`;
+
+  document.getElementById('day-detail-content').innerHTML = html;
+  goTo('s-day-detail');
 }
 
 // ── TABS (Plan screen — underline style) ──
