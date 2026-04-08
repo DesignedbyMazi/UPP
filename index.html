@@ -98,29 +98,6 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
   100%{transform:scale(4.2);opacity:0;filter:blur(13px);}
 }
 
-/* ── LIQUID BLOB (nav + tab) ── */
-#nliq-blob,#itliq-blob{
-  position:absolute;top:4px;bottom:4px;left:0;
-  border-radius:1000px;
-  background:rgba(0,167,147,0.17);
-  pointer-events:none;will-change:transform;
-  transform-origin:left center;
-  opacity:0;transition:opacity 0.18s;
-  z-index:0;
-}
-#nliq-blob.vis,#itliq-blob.vis{opacity:1;}
-@keyframes liq-ring-pop{
-  0%  {transform:scale(0.25);opacity:0.55;}
-  100%{transform:scale(2.8); opacity:0;}
-}
-.liq-ring{
-  position:absolute;border-radius:50%;
-  border:1.2px solid rgba(0,167,147,0.75);
-  pointer-events:none;
-  will-change:transform,opacity;
-  animation:liq-ring-pop 0.42s cubic-bezier(0.22,1,0.36,1) forwards;
-}
-
 /* ── INGREDIENT PILL TABS ── */
 .ingr-tabs{
   display:flex;background:#1f1f1f;border-radius:9999px;
@@ -1242,7 +1219,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
   </div>
   <!-- Pill Category Tabs -->
   <div class="ingr-tabs" id="ingr-tab-bar">
-    <span id="itliq-blob"></span>
+    <canvas id="ingr-liquid-canvas" style="position:absolute;inset:0;pointer-events:none;border-radius:inherit;z-index:0;will-change:contents;"></canvas>
     <div class="ingr-tab-slider" id="ingr-slider"></div>
     <div class="ingr-tab active" onclick="switchIngrTab(this,event,0)">Available Ingredients</div>
     <div class="ingr-tab" onclick="switchIngrTab(this,event,1)">Grocery List</div>
@@ -1499,7 +1476,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
      BOTTOM NAVIGATION
 ═══════════════════════════════════════════════ -->
 <nav id="bnav">
-  <span id="nliq-blob"></span>
+  <canvas id="nav-liquid-canvas" style="position:absolute;inset:0;pointer-events:none;border-radius:inherit;z-index:0;will-change:contents;"></canvas>
   <div class="ni active" id="nav-home" onclick="navTo('s-home','home',event)">
     <!-- Home icon -->
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1584,135 +1561,198 @@ function navTo(screenId, navKey, e) {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   LIQUID NAV ENGINE  v3  — zero-canvas, compositor-only
-   • Only transform + opacity touched per RAF → GPU thread, zero repaint
-   • Dual-spring (fast front edge, slow back edge) → natural stretch-snap
-   • RAF stops when idle — no wasted work between taps
-   • Ripple rings via CSS @keyframe spans — zero JS per pixel
+   LIQUID NAV ENGINE  v5  — zero allocations per frame
+   Every object that can be pre-built is built once at animateTo().
+   Nothing is created inside _frame():
+     • createRadialGradient  → pre-built for F glow + T glow at job start
+     • createLinearGradient  → pre-built for bridge at job start
+     • Array / forEach       → replaced with static const + for-loop
+     • save() / restore()    → eliminated; state set directly, reset after
+     • desynchronized:true   → canvas updates off main-thread where supported
+   Duration 520 ms — full effect, no sluggishness.
    ══════════════════════════════════════════════════════════════════ */
-function _makeLiquidBlob(blobId, contSel, itemSel, doRings) {
-  let blob, cont, navW = 1;
-  // Dual-spring state: fX = leading edge, bX = trailing edge
-  let fX=0, fV=0, bX=0, bV=0, fT=0, bT=0;
-  let rafId=null, last=0, ringTimer=null;
+function _makeLiquidEngine(canvasId, containerSelector) {
+  const FILL = 'rgb(0,167,147)';
+  const PI2  = Math.PI * 2;
+  const DUR  = 520;
+  // Static ring params — never allocated inside _frame
+  const RD = [[0, 20, 0.50],[0.15, 15, 0.32],[0.28, 11, 0.16]];
 
-  // Mini spring integrator — runs at nominal 60 fps steps
-  function sp(p, v, t, k, d) {
-    const a = (t-p)*k - v*d;
-    const nv = v + a/60;
-    return [p + nv/60, nv];
+  let cv, cx, job = null, rafId = null, _keys = null;
+
+  const eOut = t => 1-(1-t)**3;
+  const eIO  = t => t<.5 ? 4*t**3 : 1-(-2*t+2)**3/2;
+
+  function _resize() {
+    const el = document.querySelector(containerSelector);
+    if (!el || !cv) return;
+    cv.width = el.offsetWidth; cv.height = el.offsetHeight;
   }
 
-  function tick(ts) {
-    const dt   = Math.min(ts - last, 32);  last = ts;
-    const steps = Math.max(1, Math.round(dt / 16));
-    for (let i=0; i<steps; i++) {
-      [fX, fV] = sp(fX, fV, fT, 360, 26);  // fast leading edge
-      [bX, bV] = sp(bX, bV, bT, 200, 20);  // slow trailing edge
+  function _readSlot(keys, idx) {
+    const cont = document.querySelector(containerSelector);
+    const k = keys[idx];
+    if (!cont || !k) return null;
+    const cr = cont.getBoundingClientRect();
+    const el = typeof k === 'string' ? document.getElementById(k) : k;
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { x:r.left-cr.left+r.width/2, y:r.top-cr.top+r.height/2, w:r.width, h:r.height };
+  }
+
+  function _frame(ts) {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    if (!job) { rafId = null; return; }
+
+    const t = Math.min(1, (ts - job.t0) / DUR);
+    const {F, T, grad, glowF, glowT, sx, sy} = job;
+
+    // Set shared state once — no save/restore per primitive
+    cx.fillStyle   = FILL;
+    cx.strokeStyle = FILL;
+    cx.lineWidth   = 1.2;
+
+    if (t < 0.25) {
+      /* BULGE */
+      const p   = eIO(t / 0.25);
+      const dir = T.x > F.x ? 1 : -1;
+      cx.globalAlpha = 0.26;
+      cx.beginPath();
+      cx.ellipse(F.x + dir*F.w*0.08*p, F.y, F.w*0.40*(1+0.16*p), F.h*0.40*(1-0.09*p), 0, 0, PI2);
+      cx.fill();
+      // glow fade
+      const ga = 0.09*(1-p);
+      if (ga > 0.005) {
+        cx.globalAlpha = ga;
+        cx.fillStyle = glowF;
+        cx.beginPath();
+        cx.ellipse(F.x, F.y, F.w*0.59, F.w*0.34, 0, 0, PI2);
+        cx.fill();
+        cx.fillStyle = FILL;
+      }
+
+    } else if (t < 0.52) {
+      /* BRIDGE */
+      const p  = eIO((t-0.25)/0.27);
+      const mx = (F.x+T.x)/2;
+      const fH = F.h*0.27*(1-p*0.5);
+      const tH = T.h*0.27*(1+p*0.1);
+      const nk = Math.max(1, fH*(1-p*0.72));
+      // source shrink
+      cx.globalAlpha = 0.22*(1-p*0.8);
+      cx.beginPath();
+      cx.ellipse(F.x, F.y, F.w*0.38*(1-p*0.5), F.h*0.38*(1-p*0.5), 0, 0, PI2);
+      cx.fill();
+      // dest bud grow
+      cx.globalAlpha = 0.10+0.16*p;
+      cx.beginPath();
+      cx.ellipse(T.x, T.y, T.w*0.28*p, T.h*0.28*p, 0, 0, PI2);
+      cx.fill();
+      // honey bridge thread
+      cx.globalAlpha = p*0.28;
+      cx.fillStyle = grad;
+      cx.beginPath();
+      cx.moveTo(F.x, F.y-fH);
+      cx.quadraticCurveTo(mx, F.y-nk, T.x, T.y-tH);
+      cx.lineTo(T.x, T.y+tH);
+      cx.quadraticCurveTo(mx, F.y+nk, F.x, F.y+fH);
+      cx.closePath();
+      cx.fill();
+      cx.fillStyle = FILL;
+
+    } else if (t < 0.74) {
+      /* DETACH */
+      const p = eOut((t-0.52)/0.22);
+      // source evaporates
+      cx.globalAlpha = 0.15*(1-p);
+      cx.beginPath();
+      cx.ellipse(F.x, F.y, F.w*0.14*(1-p), F.h*0.14*(1-p), 0, 0, PI2);
+      cx.fill();
+      // dest overshoots
+      cx.globalAlpha = 0.26+0.04*p;
+      cx.beginPath();
+      cx.ellipse(T.x, T.y, T.w*0.41*(0.28+0.84*p), T.h*0.41*(0.28+0.84*p), 0, 0, PI2);
+      cx.fill();
+      // rings — for-loop, no closure, no alloc
+      for (let i = 0; i < 3; i++) {
+        const delay = RD[i][0], maxR = RD[i][1], maxA = RD[i][2];
+        const rt = p > delay ? Math.min(1,(p-delay)/(1-delay+0.001)) : 0;
+        if (!rt) continue;
+        const e = eOut(rt);
+        cx.globalAlpha = maxA*(1-e);
+        cx.beginPath();
+        cx.arc(sx, sy, 4+maxR*e, 0, PI2);
+        cx.stroke();
+      }
+
+    } else {
+      /* SETTLE */
+      const p = (t-0.74)/0.26;
+      const w = 1+0.09*Math.sin(p*Math.PI*2.5)*(1-p);
+      cx.globalAlpha = 0.25;
+      cx.beginPath();
+      cx.ellipse(T.x, T.y, T.w*0.42*w, T.h*0.42/w, 0, 0, PI2);
+      cx.fill();
+      // settle glow
+      cx.globalAlpha = 0.06+0.05*p;
+      cx.fillStyle = glowT;
+      cx.beginPath();
+      cx.ellipse(T.x, T.y, T.w*0.60, T.w*0.35, 0, 0, PI2);
+      cx.fill();
+      if (t >= 1) { job = null; rafId = null; return; }
     }
-    const w = Math.max(6, fX - bX);
-    blob.style.transform = `translateX(${bX}px) scaleX(${w / navW})`;
 
-    const settled = Math.abs(fX-fT)+Math.abs(bX-bT) < 0.3
-                 && Math.abs(fV)+Math.abs(bV) < 0.3;
-    if (settled) {
-      fX=fT; bX=bT;
-      blob.style.transform = `translateX(${bT}px) scaleX(${(fT-bT)/navW})`;
-      rafId = null;
-      return;
-    }
-    rafId = requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(_frame);
   }
 
-  function spawnRings(x, y) {
-    [0, 70, 140].forEach((delay, i) => {
-      const sz = 26 - i*4;
-      const r  = document.createElement('span');
-      r.className = 'liq-ring';
-      r.style.cssText = `width:${sz}px;height:${sz}px;`
-        + `left:${x-sz/2}px;top:${y-sz/2}px;animation-delay:${delay}ms`;
-      cont.appendChild(r);
-      r.addEventListener('animationend', ()=>r.remove(), {once:true});
-    });
+  function init(keys) {
+    cv = document.getElementById(canvasId);
+    if (!cv) return;
+    // desynchronized reduces latency on supported browsers
+    cx = cv.getContext('2d', { alpha:true, desynchronized:true });
+    _keys = keys;
+    _resize();
+    const cont = document.querySelector(containerSelector);
+    if (cont) new ResizeObserver(_resize).observe(cont);
   }
 
-  function _seed(el) {
-    // Seed blob at element without animation
-    if (!el || !cont) return;
-    navW = cont.offsetWidth || 1;
-    blob.style.width = navW + 'px';
-    const nr = cont.getBoundingClientRect();
-    const ar = el.getBoundingClientRect();
-    fX=fT = ar.right  - nr.left;
-    bX=bT = ar.left   - nr.left;
-    blob.style.transform = `translateX(${bT}px) scaleX(${(fT-bT)/navW})`;
-    blob.classList.add('vis');
-  }
+  function animateTo(fromIdx, toIdx, keys) {
+    if (!cv) return;
+    if (keys) _keys = keys;
+    _resize();
+    const F = _readSlot(_keys, fromIdx);
+    const T = _readSlot(_keys, toIdx);
+    if (!F || !T) return;
 
-  // ── public ────────────────────────────────────────────────────────
-  function init() {
-    blob = document.getElementById(blobId);
-    cont = document.querySelector(contSel);
-    if (!blob || !cont) return;
-    navW = cont.offsetWidth || 1;
-    blob.style.width = navW + 'px';
-    const active = cont.querySelector(itemSel+'.active') || cont.querySelector(itemSel);
-    _seed(active);
-    new ResizeObserver(() => {
-      navW = cont.offsetWidth || 1;
-      blob.style.width = navW + 'px';
-      // Re-seed so blob stays on correct item after resize
-      const cur = cont.querySelector(itemSel+'.active') || cont.querySelector(itemSel);
-      _seed(cur);
-    }).observe(cont);
-  }
+    // Build ALL gradient objects here — zero gradient creation inside _frame
+    const grad = cx.createLinearGradient(F.x, 0, T.x, 0);
+    grad.addColorStop(0,   'rgba(0,167,147,0.90)');
+    grad.addColorStop(0.5, 'rgba(0,167,147,0.50)');
+    grad.addColorStop(1,   'rgba(0,167,147,0.90)');
 
-  function goTo(fromIdx, toIdx) {
-    if (!blob || !cont) return;
-    navW = cont.offsetWidth || 1;
-    blob.style.width = navW + 'px';
-    const items = cont.querySelectorAll(itemSel);
-    const fEl = items[fromIdx], tEl = items[toIdx];
-    if (!fEl || !tEl) return;
-    const nr = cont.getBoundingClientRect();
-    const fr = fEl.getBoundingClientRect();
-    const tr = tEl.getBoundingClientRect();
-    const fromL=fr.left-nr.left, fromR=fr.right-nr.left;
-    const toL  =tr.left-nr.left, toR  =tr.right-nr.left;
+    const glowF = cx.createRadialGradient(F.x, F.y, 0, F.x, F.y, F.w*0.59);
+    glowF.addColorStop(0, 'rgb(0,167,147)');
+    glowF.addColorStop(1, 'rgba(0,167,147,0)');
 
-    // Seed if blob hasn't been placed yet
-    if (!blob.classList.contains('vis')) { fX=fromR; bX=fromL; }
+    const glowT = cx.createRadialGradient(T.x, T.y, 0, T.x, T.y, T.w*0.60);
+    glowT.addColorStop(0, 'rgb(0,167,147)');
+    glowT.addColorStop(1, 'rgba(0,167,147,0)');
 
-    const goRight = toL > fromL;
-    fT = toR;
-    bT = toL;
-
-    // Rings fire roughly when leading edge arrives (~260ms in)
-    if (doRings) {
-      if (ringTimer) clearTimeout(ringTimer);
-      const rx = goRight ? fromR : fromL;
-      const ry = fr.top - nr.top + fr.height/2;
-      ringTimer = setTimeout(()=>spawnRings(rx, ry), 260);
-    }
-
-    last = performance.now();
+    job = { t0: performance.now(), F, T, grad, glowF, glowT, sx:(F.x+T.x)/2, sy:F.y };
     if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(_frame);
   }
 
-  function setActive(idx) {
-    const items = cont?.querySelectorAll(itemSel);
-    if (items) _seed(items[idx]);
-  }
+  function goTo(fi, ti, keys) { animateTo(fi, ti, keys); }
+  function setActive() {}
 
-  return { init, goTo, setActive };
+  return { init, animateTo, goTo, setActive };
 }
 
-// ── instantiate ──────────────────────────────────────────────────────
-const LiquidNav = _makeLiquidBlob('nliq-blob',  '#bnav',          '.ni',        true);
-const LiquidTab = _makeLiquidBlob('itliq-blob', '#ingr-tab-bar',  '.ingr-tab',  false);
+const LiquidNav = _makeLiquidEngine('nav-liquid-canvas', '#bnav');
+const LiquidTab = _makeLiquidEngine('ingr-liquid-canvas', '#ingr-tab-bar');
 
-function spawnRipple() {}   // legacy no-op
+function spawnRipple() {}
 
 // ── ONBOARDING SEARCH DATABASES ──
 window.OB_DB = {
@@ -2442,7 +2482,7 @@ function switchIngrTab(el, e, idx) {
   if (idx === _ingrActiveIdx) return;
 
   // Fire liquid blob between the two tab elements
-  LiquidTab.goTo(_ingrActiveIdx, idx);
+  LiquidTab.animateTo(_ingrActiveIdx, idx, Array.from(tabs));
   _ingrActiveIdx = idx;
 
   tabs.forEach(t => t.classList.remove('active'));
@@ -2569,9 +2609,9 @@ goSlide(0);
   }, { passive: true });
 })();
 
-// ── Init liquid blobs (after DOM ready) ──────────────────────────
-LiquidNav.init();
-LiquidTab.init();
+// ── Init liquid engines ───────────────────────────────────────────
+LiquidNav.init(['nav-home','nav-plan','nav-ingredients','nav-feed']);
+LiquidTab.init([]);
 </script>
 </div>
 </body>
