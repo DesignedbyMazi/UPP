@@ -4,7 +4,19 @@
       "mcp__9d9802d6-8eed-4526-bd06-851f74d881b7__use_figma",
       "mcp__Claude_Preview__preview_start",
       "Bash(python3 -c \":*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(node -e \"require\\('puppeteer'\\)\")",
+      "Bash(node -e \"require\\('gif-encoder-2'\\)\")",
+      "Bash(node -e \"require\\('canvas'\\)\")",
+      "Bash(npm install:*)",
+      "Bash(del \"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\loader-states.svg\" \"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\record-gif.js\")",
+      "Bash(Remove-Item \"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\loader-states.svg\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\record-gif.js\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"Done\")",
+      "Bash(node -e ':*)",
+      "Bash(cmd.exe /c \"del /f \\\\\"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\loader-states.svg\\\\\" && del /f \\\\\"C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\record-gif.js\\\\\" && echo deleted\")",
+      "Bash(powershell -Command \"Remove-Item 'C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\loader-states.svg' -Force -ErrorAction SilentlyContinue; Remove-Item 'C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\record-gif.js' -Force -ErrorAction SilentlyContinue; Write-Host 'done'\")",
+      "Bash(powershell -Command \"Test-Path 'C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\loader-states.svg'; Test-Path 'C:\\\\Users\\\\dell\\\\OneDrive\\\\Desktop\\\\UPP\\\\record-gif.js'\")"
     ]
   }
 }
