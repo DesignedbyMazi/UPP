@@ -274,16 +274,16 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
 /* ── STREAK ── */
 .streak-row{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
 .streak-badge{
-  display:flex;align-items:center;gap:4px;
+  display:inline-flex;align-items:center;gap:4px;
   background:var(--accent-dim);border-radius:var(--r-full);
-  padding:4px 10px;
+  padding:4px 10px;align-self:flex-start;
 }
 .streak-badge span{font-size:12px;color:var(--accent);font-weight:500;}
 
 /* ── BIG CALORIE ── */
 .calorie-hero{margin:8px 0 16px;}
 .calorie-sub{font-size:20px;font-weight:700;color:var(--gray2);}
-.calorie-main{font-size:28px;font-weight:800;color:var(--white);line-height:1.1;}
+.calorie-main{font-size:36px;font-weight:800;color:var(--white);line-height:48px;}
 
 /* ── CALORIE SUMMARY ── */
 .summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
@@ -550,7 +550,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">Do You Have Any<br>Ingredient Available?</h2>
+    <h2 class="ob-title">Do You Have Any Ingredient Available?</h2>
     <p class="ob-sub">Kindly pick the ingredient you have at home</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
@@ -581,7 +581,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">Do you have any<br>allergies?</h2>
+    <h2 class="ob-title">Do you have any allergies?</h2>
     <p class="ob-sub">Kindly pick foods you react to</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
@@ -612,7 +612,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">Tell Us About<br>Your Diet</h2>
+    <h2 class="ob-title">Tell Us About Your Diet</h2>
     <p class="ob-sub">Choose the eating style that best fits you</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
@@ -643,7 +643,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash done"></div><div class="ob-dash"></div><div class="ob-dash"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">What Foods Make<br>You Happy?</h2>
+    <h2 class="ob-title">What Foods Make You Happy?</h2>
     <p class="ob-sub">Pick your go-to favorites</p>
     <div style="position:relative;">
       <div class="search-box" style="margin-bottom:0;">
@@ -674,7 +674,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">How Much Time Do<br>You Spend Cooking?</h2>
+    <h2 class="ob-title">How Much Time Do You Spend Cooking?</h2>
     <p class="ob-sub">Let us know your average weekly cooking hours</p>
 
     <div style="background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;cursor:pointer;" onclick="toggleCookDropdown()">
@@ -706,7 +706,7 @@ html,body{width:100%;height:100%;background:#111;display:flex;justify-content:ce
     <div class="ob-dash done"></div><div class="ob-dash done"></div><div class="ob-dash done"></div>
   </div>
   <div class="ob-content">
-    <h2 class="ob-title">Define Your<br>Growth</h2>
+    <h2 class="ob-title">Define Your Growth</h2>
     <p class="ob-sub">Share your daily targets or health priorities</p>
 
     <!-- Nutrition goal dropdown -->
